@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block content %}
+
+<!--<div id="single_new" id="cont" style="max-width: 1000px;">-->
+<!--    <h3 id="single-title" style="width: 96%;">{{post.title}}</h3>-->
+<!--    <img src="/photos/{{post.photo}}" id="news-img" style="width: 96%;"><br>-->
+<!--    <p id="single-paragraf" style="width: 96%;">{{post.content|linebreaksbr}}</p>-->
+<!--    <label style="font-size: 12px;" id="news-data">{{post.create_date | date:'d-M H:i'}}</label><br>-->
+<!--</div>-->
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h2 id="blogTitle">{{ post.title }}</h2>
+    </div>
+    <div class="card-body">
+        <img src="/photos/{{post.photo}}" width="98%">
+        <p id="paragraf" class="card-text" >{{ post.content|safe|linebreaksbr }}</p>
+    </div>
+    <div class="row">
+            <div class="col-6">
+                <label>{{ post.author }}</label>
+            </div>
+            <div class="col-6">
+                <label class="news-label float-end">{{ post.create_date|date:"d-M H:i" }}</label>
+            </div>
+    </div>
+</div>
+
+<div id="comments_section">
+
+  {% if user.is_authenticated %}
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ comment_form }}
+      <button class="btn btn-info" type="submit">Оставить<i class="fas fa-comments"></i></button>
+    </div>
+  </form>
+  {% else %}
+  <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Войдите чтобы оставить коммент</a><br>
+  {% endif %}
+
+  {% if comments %}
+  <strong class="text-secondary">{{ object.number_of_comments }} Comment{{ object.number_of_comments|pluralize }}</strong>
+  <hr>
+  <ul>
+    {% for comment in comments %}
+    <li>
+     <div>
+        <span>
+          <strong class="text-info">{{ comment.author }} </strong>
+          <small class="text-muted">{{ comment.date_posted|date:"H:i d-m-y" }}</small>
+        </span>
+        <p>
+          {{ comment.content|safe }}
+        </p>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <strong class="text-secondary">Пока нет комментарий...</strong>
+  {% endif %}
+
+</div>
+
+{% endblock %}
